@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consumption Calculator</title>
+    
+    <!-- Google Font matching the brand's typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:ital,wght@1,600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --gc-magenta: #e91e63;
+            --gc-blue: #0288d1;
+            --gc-yellow: #fbc02d;
+            --gc-green: #7cb342;
+            --bg-gradient: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+            --card-bg: #ffffff;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 460px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            overflow: hidden;
+        }
+
+        /* Logo Header */
+        .logo-header {
+            width: 100%;
+            padding: 36px 20px 16px 20px;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .custom-brand-logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.3rem;
+            font-weight: 600;
+            font-style: italic;
+            color: #484848;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: baseline;
+            gap: 12px;
+            user-select: none;
+        }
+
+        /* Custom Exclamation Point (!) */
+        .exclamation-mark {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            height: 44px;
+            justify-content: space-between;
+            transform: rotate(10deg);
+            margin-left: -4px;
+        }
+
+        .exclamation-stick {
+            width: 13px;
+            height: 30px;
+            border-radius: 8px 8px 3px 3px;
+            background: linear-gradient(
+                to bottom,
+                #e61f74 0%, #e61f74 35%,
+                #1273ba 35%, #1273ba 68%,
+                #f8be14 68%, #f8be14 100%
+            );
+            clip-path: polygon(0 0, 100% 0, 80% 100%, 20% 100%);
+        }
+
+        .exclamation-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #8ec63f;
+            border-radius: 50%;
+        }
+
+        .form-body {
+            padding: 16px 32px 32px 32px;
+        }
+
+        .header-title {
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-dark);
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 60px 12px 14px;
+            font-size: 0.95rem;
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        input:focus {
+            border-color: var(--gc-blue);
+            box-shadow: 0 0 0 3px rgba(2, 136, 209, 0.15);
+        }
+
+        input[readonly] {
+            background-color: #f1f5f9;
+            color: #475569;
+            cursor: not-allowed;
+        }
+
+        .unit-tag {
+            position: absolute;
+            right: 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            pointer-events: none;
+            transition: color 0.3s ease;
+        }
+
+        .btn-calculate {
+            width: 100%;
+            padding: 14px;
+            margin-top: 10px;
+            background: linear-gradient(90deg, var(--gc-magenta) 0%, var(--gc-blue) 50%, var(--gc-yellow) 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            transition: opacity 0.2s ease, transform 0.1s ease;
+        }
+
+        .btn-calculate:hover {
+            opacity: 0.95;
+        }
+
+        .btn-calculate:active {
+            transform: scale(0.99);
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 24px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .results-table th {
+            background-color: #f8fafc;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .results-table td {
+            padding: 12px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .results-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge-result {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 700;
+            color: #fff;
+            font-size: 0.85rem;
+        }
+
+        .bg-blue { background-color: var(--gc-blue); }
+        .bg-magenta { background-color: var(--gc-magenta); }
+
+        .unit-cell {
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <!-- Logo Header -->
+    <div class="logo-header">
+        <div class="custom-brand-logo">
+            <span>GO</span>
+            <span>COLORS</span>
+            <span class="exclamation-mark">
+                <span class="exclamation-stick"></span>
+                <span class="exclamation-dot"></span>
+            </span>
+        </div>
+    </div>
+
+    <div class="form-body">
+        <div class="header-title">Consumption Calculator</div>
+
+        <!-- Inputs -->
+        <div class="form-group">
+            <label for="fabric">Fabric Received</label>
+            <div class="input-wrapper">
+                <input type="number" id="fabric" placeholder="Enter quantity" step="any">
+                <span class="unit-tag" id="fabricUnit">m/kg</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="po">PO Qty</label>
+            <div class="input-wrapper">
+                <input type="number" id="po" placeholder="Enter PO quantity" step="any">
+                <span class="unit-tag">Pcs</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="cutting">Cutting Qty</label>
+            <div class="input-wrapper">
+                <input type="number" id="cutting" placeholder="Enter cutting quantity" step="any">
+                <span class="unit-tag">Pcs</span>
+            </div>
+        </div>
+
+        <!-- Difference Quantity Field -->
+        <div class="form-group">
+            <label for="diff">Difference Qty (PO - Cutting)</label>
+            <div class="input-wrapper">
+                <input type="text" id="diff" placeholder="Calculated automatically" readonly>
+                <span class="unit-tag">Pcs</span>
+            </div>
+        </div>
+
+        <button class="btn-calculate" onclick="calculate()">📊 Calculate Metrics</button>
+
+        <!-- Results Table -->
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th>Consumption Type</th>
+                    <th style="text-align: center;">Result</th>
+                    <th style="text-align: right;">Unit</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>RM Sheet Consumption</td>
+                    <td style="text-align: center;">
+                        <span id="rmValue" class="badge-result bg-blue">—</span>
+                    </td>
+                    <td style="text-align: right;" class="unit-cell" id="rmUnitCell">m/kg-Pc</td>
+                </tr>
+                <tr>
+                    <td>Arrived Consumption</td>
+                    <td style="text-align: center;">
+                        <span id="arrValue" class="badge-result bg-magenta">—</span>
+                    </td>
+                    <td style="text-align: right;" class="unit-cell" id="arrUnitCell">m/kg-Pc</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function calculate() {
+    const fabric = parseFloat(document.getElementById("fabric").value);
+    const po = parseFloat(document.getElementById("po").value);
+    const cutting = parseFloat(document.getElementById("cutting").value);
+
+    // Inputs Validation
+    if (isNaN(fabric) || isNaN(po) || isNaN(cutting)) {
+        alert("Please enter valid numerical values in all fields.");
+        return;
+    }
+
+    if (po <= 0 || cutting <= 0) {
+        alert("PO Quantity and Cutting Quantity must be greater than 0.");
+        return;
+    }
+
+    // Calculations
+    const diffQty = po - cutting;
+    const rm = fabric / po;
+    const arrived = fabric / cutting;
+
+    // Display Difference Quantity
+    document.getElementById("diff").value = diffQty;
+
+    // Dynamic Unit Switching Logic
+    let currentUnit = "";
+    let displayUnitCell = "";
+
+    if (rm > 1) {
+        currentUnit = "m";
+        displayUnitCell = "m/pc";
+    } else {
+        currentUnit = "kg";
+        displayUnitCell = "kg/pc";
+    }
+
+    // Update Input Tag Unit & Table Units
+    document.getElementById("fabricUnit").innerText = currentUnit;
+    document.getElementById("rmUnitCell").innerText = displayUnitCell;
+    document.getElementById("arrUnitCell").innerText = displayUnitCell;
+
+    // Display Output
+    document.getElementById("rmValue").innerText = rm.toFixed(3);
+    document.getElementById("arrValue").innerText = arrived.toFixed(3);
+}
+</script>
+
+</body>
+</html>
